@@ -1,5 +1,7 @@
 # documentos-tcmba
 
+[![CI](https://github.com/DadosAbertosDeFeira/documentos-tcmba/actions/workflows/ci.yml/badge.svg)](https://github.com/DadosAbertosDeFeira/documentos-tcmba/actions/workflows/ci.yml)
+
 O Tribunal de Contas dos Municípios da Bahia tem uma
 [consulta pública](https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam)
 para todos os documentos submetidos pelas prefeituras através do SIGA.
