@@ -22,19 +22,14 @@ do Dados Abertos de Feira disponíveis [aqui](https://github.com/DadosAbertosDeF
 
 Para carregar a tabela "Prestações de Contas" você precisa selecionar alguns filtros:
 
-* Periodicidade PCO:
-- Anual
-- Mensal
-
-* Competência: filtro de mês ou ano
-
-* Tipo: pode deixar em branco (?)
-
-* Munícipio: Feira de Santana (podemos pensar em criar um pacote para raspar por município, assim outras cidades podem se beneficiar da solução)
-
-* Unidade Jurisdicionada: todas (teremos que selecionar uma por uma no próximo passo)
-
-* Status: pode deixar em branco (esperamos que venham todas)
+* **Periodicidade PCO**:
+    - Anual
+    - Mensal
+* **Competência**: filtro de mês ou ano
+* **Tipo**: pode deixar em branco (?)
+* **Munícipio**: Feira de Santana (podemos pensar em criar um pacote para raspar por município, assim outras cidades podem se beneficiar da solução)
+* **Unidade Jurisdicionada**: todas (teremos que selecionar uma por uma no próximo passo)
+* **Status**: pode deixar em branco (esperamos que venham todas)
 
 ### Passo 2: Prestações de Contas
 
