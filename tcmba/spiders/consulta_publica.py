@@ -49,7 +49,7 @@ class ConsultaPublicaSpider(Spider):
         """
 
         # TODO: Parsear todos os resultados
-        for table_row in [result_rows[8]]:
+        for table_row in [result_rows[0]]:
             columns = table_row.xpath("./td")
 
             form_id = self.get_form_id(columns[0])
