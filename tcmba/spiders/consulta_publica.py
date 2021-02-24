@@ -1,6 +1,6 @@
 from scrapy import Spider, Request, FormRequest
 from parsel import Selector
-from tcmba.items import TcmbaItem
+from tcmba.items import DocumentItem
 
 
 class ConsultaPublicaSpider(Spider):
@@ -91,7 +91,7 @@ class ConsultaPublicaSpider(Spider):
                 if text.strip()
             ]
 
-            item = TcmbaItem(
+            item = DocumentItem(
                 category=texts[0],
                 filename=texts[1],
                 inserted_by=texts[2],
@@ -148,13 +148,12 @@ class ConsultaPublicaSpider(Spider):
         ) as fp:  # noqa
             fp.write(response.body)
 
-        # hacky way
-        for _ in [item, payload]:
-            if isinstance(_, TcmbaItem):
-                yield _
+        for value in (item, payload):
+            if isinstance(value, DocumentItem):
+                yield value
             else:
-                if _:
-                    yield FormRequest(**_)
+                if value:
+                    yield FormRequest(**value)
 
     def get_selector(self, response):
         source_code = (

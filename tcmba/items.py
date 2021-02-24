@@ -1,7 +1,7 @@
 from scrapy import Item, Field
 
 
-class TcmbaItem(Item):
+class DocumentItem(Item):
     category = Field()
     filename = Field()
     inserted_by = Field()
