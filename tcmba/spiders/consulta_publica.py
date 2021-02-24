@@ -1,6 +1,7 @@
 from scrapy import Spider, Request, FormRequest
 from parsel import Selector
 from tcmba.items import DocumentItem
+from re import search
 
 
 class ConsultaPublicaSpider(Spider):
@@ -42,6 +43,8 @@ class ConsultaPublicaSpider(Spider):
             "//*[@id='javax.faces.ViewState']/text()"
         ).get()  # noqa
 
+        # 9 nao tem paginação
+
         # TODO: Parsear todos os resultados
         for table_row in [result_rows[0]]:
             columns = table_row.xpath("./td")
@@ -80,6 +83,23 @@ class ConsultaPublicaSpider(Spider):
         unit = selector.xpath(
             "//span[@id='consultaPublicaTabPanel:unidadeJurisdicionadaDecoration:unidadeJurisdicionada']/text()"  # noqa
         ).get()
+
+        paginator_text = selector.xpath("//*[@id='consultaPublicaTabPanel:tabelaDocumentos_s']/text()").get()
+
+
+        number_of_pages = 0
+
+        if paginator_text:
+            row_count = search(r"rowCount:[0-9]{1,}", paginator_text)
+            if row_count:
+                # Because we have 10 results per page
+                row_count = row_count.group(0).lower().replace("rowcount:", "").strip()
+                number_of_pages = round(int(row_count) / 10)
+
+        if number_of_pages:
+            pass # Write the logic here
+
+
 
         payloads = []
 
