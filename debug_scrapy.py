@@ -1,6 +1,10 @@
 from scrapy import cmdline
 import sys
 
+"""
+Método utilizado para podermos debugar a spider pela IDE
+"""
+
 
 def main(name):
     if name:
