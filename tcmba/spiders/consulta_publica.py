@@ -43,10 +43,13 @@ class ConsultaPublicaSpider(Spider):
             "//*[@id='javax.faces.ViewState']/text()"
         ).get()  # noqa
 
-        # 9 nao tem paginação
+        """
+        Index 9 não tem paginação OK.
+        Index 8 contém 6 páginas
+        """
 
         # TODO: Parsear todos os resultados
-        for table_row in [result_rows[0]]:
+        for table_row in [result_rows[8]]:
             columns = table_row.xpath("./td")
 
             form_id = self.get_form_id(columns[0])
@@ -72,36 +75,39 @@ class ConsultaPublicaSpider(Spider):
             )
 
     def get_detailed_results(self, response):
+
+        pages = response.meta.get("pages", None)
+        payloads = response.meta.get("payloads", [])
+        unit = response.meta.get("unit", None)
+
         selector = self.get_selector(response)
 
         result_rows = selector.xpath(
             "//tbody[@id='consultaPublicaTabPanel:tabelaDocumentos_data']//tr"
-        )
+        ) or selector.xpath("//*[@id='consultaPublicaTabPanel:tabelaDocumentos']//tr")
+
         view_state = selector.xpath(
             "//*[@id='javax.faces.ViewState']/text()"
         ).get()  # noqa
-        unit = selector.xpath(
-            "//span[@id='consultaPublicaTabPanel:unidadeJurisdicionadaDecoration:unidadeJurisdicionada']/text()"  # noqa
-        ).get()
 
-        paginator_text = selector.xpath("//*[@id='consultaPublicaTabPanel:tabelaDocumentos_s']/text()").get()
+        if not unit:
+            unit = selector.xpath(
+                "//span[@id='consultaPublicaTabPanel:unidadeJurisdicionadaDecoration:unidadeJurisdicionada']/text()"  # noqa
+            ).get()
 
-
-        number_of_pages = 0
-
-        if paginator_text:
-            row_count = search(r"rowCount:[0-9]{1,}", paginator_text)
-            if row_count:
-                # Because we have 10 results per page
-                row_count = row_count.group(0).lower().replace("rowcount:", "").strip()
-                number_of_pages = round(int(row_count) / 10)
-
-        if number_of_pages:
-            pass # Write the logic here
-
-
-
-        payloads = []
+        if pages is None:
+            paginator_text = selector.xpath(
+                "//*[@id='consultaPublicaTabPanel:tabelaDocumentos_s']/text()"
+            ).get()
+            if paginator_text:
+                row_count = search(r"rowCount:[0-9]{1,}", paginator_text)
+                if row_count:
+                    # Because we have 10 results per page
+                    row_count = (
+                        row_count.group(0).lower().replace("rowcount:", "").strip()
+                    )
+                    number_of_pages = round(int(row_count) / 10)
+                    pages = list(range(1, number_of_pages))
 
         for row in result_rows:
             columns = row.xpath("./td")
@@ -140,12 +146,17 @@ class ConsultaPublicaSpider(Spider):
                     url="https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",  # noqa
                     formdata=payload,
                     callback=self.prepare_file_request,
-                    meta={"item": item, "payloads": payloads},
+                    meta={
+                        "item": item,
+                        "payloads": payloads,
+                        "pages": pages,
+                        "view_state": view_state,
+                        "unit": unit,
+                    },
                 )
             )
 
         payload = payloads.pop(0)
-
         yield FormRequest(**payload)
 
     def prepare_file_request(self, response):
@@ -161,8 +172,8 @@ class ConsultaPublicaSpider(Spider):
         item = response.meta["item"]
         payloads = response.meta["payloads"]
         payload = payloads.pop(0) if payloads else None
+        pages = response.meta["pages"]
 
-        # TODO: Mover para Middlewares?
         with open(
             f"{self.settings['FILES_STORE']}/{item['filename']}", "wb"
         ) as fp:  # noqa
@@ -174,6 +185,35 @@ class ConsultaPublicaSpider(Spider):
             else:
                 if value:
                     yield FormRequest(**value)
+                else:
+                    if pages:
+                        view_state = response.meta["view_state"]
+                        unit = response.meta["unit"]
+
+                        page = pages.pop(0)
+
+                        payload = {
+                            "javax.faces.partial.ajax": "true",
+                            "javax.faces.source": "consultaPublicaTabPanel:tabelaDocumentos",
+                            "javax.faces.partial.execute": "consultaPublicaTabPanel:tabelaDocumentos",
+                            "javax.faces.partial.render": "consultaPublicaTabPanel:tabelaDocumentos",
+                            "consultaPublicaTabPanel:tabelaDocumentos": "consultaPublicaTabPanel:tabelaDocumentos",
+                            "consultaPublicaTabPanel:tabelaDocumentos_pagination": "true",
+                            "consultaPublicaTabPanel:tabelaDocumentos_first": str(
+                                page * 10
+                            ),
+                            "consultaPublicaTabPanel:tabelaDocumentos_rows": "10",
+                            "consultaPublicaTabPanel:tabelaDocumentos_encodeFeature": "true",
+                            "j_idt15": "j_idt15",
+                            "javax.faces.ViewState": view_state,
+                        }
+
+                        yield FormRequest(
+                            url="https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",  # noqa
+                            formdata=payload,
+                            meta={"payloads": payloads, "pages": pages, "unit": unit},
+                            callback=self.get_detailed_results,
+                        )
 
     def get_selector(self, response):
         source_code = (
