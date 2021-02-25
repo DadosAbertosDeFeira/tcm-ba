@@ -1,19 +1,74 @@
-from scrapy import Spider, Request, FormRequest
+import logging
+
 from parsel import Selector
+from scrapy import FormRequest, Request, Spider
+
 from tcmba.items import DocumentItem
+
+from .helpers import (format_city, format_month_and_year, format_period,
+                      format_year)
+
+logger = logging.getLogger(__name__)
 
 
 class ConsultaPublicaSpider(Spider):
     name = "consulta_publica"
     start_urls = ["https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam"]
 
+    def __init__(self, *args, **kwargs):
+        """Inicializa o spider com os argumentos prontos para serem utilizados."""
+        super(ConsultaPublicaSpider, self).__init__(*args, **kwargs)
+
+        if hasattr(self, "cidade"):
+            self.cidade = format_city(self.cidade)
+        else:
+            raise Exception("Você precisa informar uma cidade.")
+
+        if hasattr(self, "periodicidade"):
+            if self.periodicidade.lower() in ("anual", "mensal"):
+
+                if hasattr(self, "competencia"):
+                    if "anual" in self.periodicidade:
+                        try:
+                            int(self.competencia)
+                        except:
+                            raise Exception("Você precisa informar um ano válido.")
+                        else:
+                            self.competencia = format_year(self.competencia)
+                    elif "mensal" in self.periodicidade:
+                        try:
+                            # FIXME checar formato com regex
+                            self.competencia
+                        except:
+                            raise Exception(
+                                "Você precisa informar o mês no formato MM/YYYY."
+                            )
+                        else:
+                            self.competencia = format_month_and_year(self.competencia)
+
+                self.periodicidade = format_period(self.periodicidade)
+            else:
+                raise Exception(
+                    "Periodicidade inválida (precisa ser `anual` ou `mensal`)."
+                )
+        else:
+            raise Exception(
+                "Você precisa informar uma periodicidade (precisa ser `anual` ou `mensal`)."
+            )
+
+        logger.info(
+            f"Argumentos: `{self.cidade}` `{self.periodicidade}` `{self.competencia}`"
+        )
+
     def parse(self, response):
+        print(self.cidade)
+
         form_id = "consultaPublicaTabPanel:consultaPublicaPCSearchForm"
 
         payload = {
-            f"{form_id}:PeriodicidadePC_input": "Anual",
-            f"{form_id}:competenciaPC_input": "2019   ",
-            f"{form_id}:municipio_input": "FEIRA DE SANTANA              ",
+            f"{form_id}:PeriodicidadePC_input": self.periodicidade,
+            f"{form_id}:competenciaPC_input": self.competencia,
+            f"{form_id}:municipio_input": self.city,
             "javax.faces.partial.ajax": "true",
             "javax.faces.source": f"{form_id}:searchButton",
             "javax.faces.partial.event": "click",

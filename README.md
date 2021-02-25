@@ -56,7 +56,12 @@ como filtros para o cidadão.
 
 ## Desenvolvimento
 
-TODO
+Para rodar o _spider_:
+
+```
+scrapy crawl consulta_publica -a periodicidade=mensal -a competencia=08/2018 -a cidade="feira de santana"
+scrapy crawl consulta_publica -a periodicidade=anual -a competencia=2018 -a cidade="são gonçalo"
+```
 
 ---
 
