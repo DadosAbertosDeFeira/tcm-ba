@@ -41,7 +41,7 @@ class ConsultaPublicaSpider(Spider):
             if hasattr(self, "competencia"):
                 try:
                     int(self.competencia)
-                except:
+                except ValueError:
                     raise Exception("Você precisa informar um ano válido.")
             else:
                 self.competencia = date.today().year
@@ -54,7 +54,7 @@ class ConsultaPublicaSpider(Spider):
                 try:
                     match = re.search(r"\d{2}\/\d{4}", self.competencia)
                     self.competencia = match.group()
-                except:
+                except AttributeError:
                     raise Exception("Você precisa informar o mês no formato MM/YYYY.")
             self.competencia = format_month_and_year(self.competencia)
 
