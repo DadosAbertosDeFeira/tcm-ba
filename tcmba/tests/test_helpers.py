@@ -1,6 +1,11 @@
 import pytest
 
-from .helpers import format_city, format_year, strip_accents
+from tcmba.spiders.helpers import (
+    format_city,
+    format_month_and_year,
+    format_year,
+    strip_accents,
+)
 
 
 @pytest.mark.parametrize(
@@ -33,3 +38,7 @@ def test_strip_accents(original_value, expected_value):
 
 def test_given_year_format_according_to_tcmba_format():
     assert format_year("2018") == "2018   "
+
+
+def test_given_month_and_year_format_according_to_tcmba_format():
+    assert format_month_and_year("10/2018  ") == "10/2018"

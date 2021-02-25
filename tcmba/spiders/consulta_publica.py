@@ -1,12 +1,13 @@
 import logging
+import re
+from datetime import date, timedelta
 
 from parsel import Selector
 from scrapy import FormRequest, Request, Spider
 
 from tcmba.items import DocumentItem
 
-from .helpers import (format_city, format_month_and_year, format_period,
-                      format_year)
+from .helpers import format_city, format_month_and_year, format_period, format_year
 
 logger = logging.getLogger(__name__)
 
@@ -22,53 +23,56 @@ class ConsultaPublicaSpider(Spider):
         if hasattr(self, "cidade"):
             self.cidade = format_city(self.cidade)
         else:
-            raise Exception("Você precisa informar uma cidade.")
+            self.cidade = format_city("Feira de Santana")
+
+        if hasattr(self, "unidade") is False:
+            self.unidade = ""
 
         if hasattr(self, "periodicidade"):
-            if self.periodicidade.lower() in ("anual", "mensal"):
-
-                if hasattr(self, "competencia"):
-                    if "anual" in self.periodicidade:
-                        try:
-                            int(self.competencia)
-                        except:
-                            raise Exception("Você precisa informar um ano válido.")
-                        else:
-                            self.competencia = format_year(self.competencia)
-                    elif "mensal" in self.periodicidade:
-                        try:
-                            # FIXME checar formato com regex
-                            self.competencia
-                        except:
-                            raise Exception(
-                                "Você precisa informar o mês no formato MM/YYYY."
-                            )
-                        else:
-                            self.competencia = format_month_and_year(self.competencia)
-
-                self.periodicidade = format_period(self.periodicidade)
-            else:
+            self.periodicidade = format_period(self.periodicidade)
+            if self.periodicidade not in ("Anual", "Mensal"):
                 raise Exception(
-                    "Periodicidade inválida (precisa ser `anual` ou `mensal`)."
+                    "Você precisa informar uma periodicidade válida (anual ou mensal)."
                 )
         else:
-            raise Exception(
-                "Você precisa informar uma periodicidade (precisa ser `anual` ou `mensal`)."
-            )
+            self.periodicidade = "Mensal"
+
+        if "anual" in self.periodicidade.lower():
+            if hasattr(self, "competencia"):
+                try:
+                    int(self.competencia)
+                except:
+                    raise Exception("Você precisa informar um ano válido.")
+            else:
+                self.competencia = date.today().year
+            self.competencia = format_year(self.competencia)
+        elif "mensal" in self.periodicidade.lower():
+            if hasattr(self, "competencia") is False:
+                fourthy_days_ago = date.today() - timedelta(days=40)
+                self.competencia = date.strftime(fourthy_days_ago, "%m/%Y")
+            else:
+                try:
+                    match = re.search(r"\d{2}\/\d{4}", self.competencia)
+                    self.competencia = match.group()
+                except:
+                    raise Exception("Você precisa informar o mês no formato MM/YYYY.")
+            self.competencia = format_month_and_year(self.competencia)
 
         logger.info(
-            f"Argumentos: `{self.cidade}` `{self.periodicidade}` `{self.competencia}`"
+            f"Argumentos: `{self.cidade}` "
+            f"`{self.periodicidade}` "
+            f"`{self.competencia}` "
+            f"`{self.unidade}`"
         )
 
     def parse(self, response):
-        print(self.cidade)
-
         form_id = "consultaPublicaTabPanel:consultaPublicaPCSearchForm"
 
         payload = {
             f"{form_id}:PeriodicidadePC_input": self.periodicidade,
             f"{form_id}:competenciaPC_input": self.competencia,
-            f"{form_id}:municipio_input": self.city,
+            f"{form_id}:municipio_input": self.cidade,
+            f"{form_id}:unidadeJurisdicionada_input": self.unidade,
             "javax.faces.partial.ajax": "true",
             "javax.faces.source": f"{form_id}:searchButton",
             "javax.faces.partial.event": "click",

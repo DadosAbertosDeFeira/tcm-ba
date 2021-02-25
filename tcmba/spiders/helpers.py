@@ -6,8 +6,7 @@ def format_city(city):
     if city is None or len(city) > limit:
         raise Exception("Nome de cidade inválido.")
     city = strip_accents(city.strip().upper())
-    number_of_spaces = limit - len(city)
-    return f"{city}{number_of_spaces * ' '}"
+    return city.ljust(limit)
 
 
 def strip_accents(string):
@@ -21,11 +20,11 @@ def strip_accents(string):
 
 
 def format_period(string):
-    return string.title()
+    return string.strip().title()
 
 
 def format_month_and_year(string):
-    return string
+    return string.strip()
 
 
 def format_year(year):
@@ -33,5 +32,4 @@ def format_year(year):
     if year is None or len(year) > limit:
         raise Exception("Ano inválido.")
     year = year.strip()
-    number_of_spaces = limit - len(year)
-    return f"{year}{number_of_spaces * ' '}"
+    return year.ljust(limit)
