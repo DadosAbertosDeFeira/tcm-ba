@@ -1,17 +1,20 @@
-from .helpers import format_city, strip_accents
 import pytest
 
+from .helpers import format_city, strip_accents
 
-@pytest.mark.parametrize("city,expected_format", [
-    ("Feira de Santana", "FEIRA DE SANTANA              "),
-    ("campo alegre de lourdes", "CAMPO ALEGRE DE LOURDES       "),
-    ("SALVADOR", "SALVADOR                      "),
-    ("     Amélia Rodrigues    ", "AMELIA RODRIGUES              "),
-    (None, None)
-])
+
+@pytest.mark.parametrize(
+    "city,expected_format",
+    [
+        ("Feira de Santana", "FEIRA DE SANTANA              "),
+        ("campo alegre de lourdes", "CAMPO ALEGRE DE LOURDES       "),
+        ("SALVADOR", "SALVADOR                      "),
+        ("     Amélia Rodrigues    ", "AMELIA RODRIGUES              "),
+        (None, None),
+    ],
+)
 def test_given_city_format_according_to_tcmba_format(city, expected_format):
     assert format_city(city) == expected_format
-
 
 
 @pytest.mark.parametrize(
