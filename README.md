@@ -1,6 +1,24 @@
-# documentos-tcmba
+# Dados do TCM-BA
 
 [![CI](https://github.com/DadosAbertosDeFeira/documentos-tcmba/actions/workflows/ci.yml/badge.svg)](https://github.com/DadosAbertosDeFeira/documentos-tcmba/actions/workflows/ci.yml)
+
+Aqui você encontrará raspadores para o site do Tribunal de Contas dos Municípios da Bahia.
+
+Raspadores disponíveis:
+
+* Documentos da consulta pública
+* Processos
+
+## Dados
+
+Em breve os dados disponíveis para download aqui. :soon:
+
+### Processos
+
+O Tribunal lista todos os processos na página de [jurisdicação](https://www.tcm.ba.gov.br/consulta/jurisprudencia/consulta-ementario-juridico/).
+Veja mais detalhes sobre os processos listados lá e os detalhes da [consulta processual](https://www.tcm.ba.gov.br/consulta-processual/).
+
+## Documentos da consulta pública
 
 O Tribunal de Contas dos Municípios da Bahia tem uma
 [consulta pública](https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam)
@@ -16,9 +34,9 @@ Os municípios podem submeter esses dados até 40 dias depois do final do mês.
 Esse repositório está sujeito ao código de conduta e guia de contribuição
 do Dados Abertos de Feira disponíveis [aqui](https://github.com/DadosAbertosDeFeira/guias).
 
-## Passo a passo para acesso aos documentos
+#### Passo a passo para acesso aos documentos
 
-### Passo 1: filtros
+##### Passo 1: filtros
 
 ![](images/filtros.png)
 
@@ -33,14 +51,14 @@ Para carregar a tabela "Prestações de Contas" você precisa selecionar alguns 
 * **Unidade Jurisdicionada**: todas (teremos que selecionar uma por uma no próximo passo)
 * **Status**: pode deixar em branco (esperamos que venham todas)
 
-### Passo 2: Prestações de Contas
+##### Passo 2: Prestações de Contas
 
 Aqui irão aparecer os resultados das opções selecionadas no Passo 1.
 Geralmente uma lista com as unidades jurisdicionadas e a competência (mês/ano).
 
 ![](images/prestacao-de-contas.png)
 
-### Passo 3: Resultados
+##### Passo 3: Resultados
 
 Ao clicar em uma unidade jurisdicionada (do passo anterior), temos acesso a lista de
 documentos, paginada a cada 10 resultados:
