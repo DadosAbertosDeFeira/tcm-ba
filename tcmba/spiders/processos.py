@@ -1,11 +1,11 @@
-import scrapy
+from scrapy import FormRequest, Request, Spider
 
 
-class ProcessesSpider(scrapy.Spider):
+class ProcessesSpider(Spider):
     name = "processos"
     allowed_domains = ["www.tcm.ba.gov.br/"]
     start_urls = [
-        "https://www.tcm.ba.gov.br/consulta/jurisprudencia/consulta-ementario-juridico/#todos/"
+        "https://www.tcm.ba.gov.br/consulta/jurisprudencia/consulta-ementario-juridico/#todos/"  # noqa
     ]
     handle_httpstatus_list = [302]
 
@@ -26,7 +26,7 @@ class ProcessesSpider(scrapy.Spider):
                 "descricao": description,
                 "arquivo": file_url,
             }
-            yield scrapy.Request(
+            yield Request(
                 "https://www.tcm.ba.gov.br/consulta-processual/",
                 dont_filter=True,
                 callback=self.parse_process,
@@ -34,7 +34,7 @@ class ProcessesSpider(scrapy.Spider):
             )
 
     def parse_process(self, response):
-        yield scrapy.FormRequest.from_response(
+        yield FormRequest.from_response(
             response,
             method="POST",
             dont_filter=True,
