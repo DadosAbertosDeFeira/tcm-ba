@@ -1,5 +1,7 @@
 from scrapy import FormRequest, Request, Spider
 
+from tcmba.items import ProcessItem
+
 
 class ProcessesSpider(Spider):
     name = "processos"
@@ -21,16 +23,16 @@ class ProcessesSpider(Spider):
         for process_number, description, file_url in zip(
             process_numbers, descriptions, file_urls
         ):
-            data = {
-                "numero_processo": process_number,
-                "descricao": description,
-                "arquivo": file_url,
-            }
+            item = ProcessItem(
+                process_number=process_number,
+                description=description,
+                file_url=file_url,
+            )
             yield Request(
                 "https://www.tcm.ba.gov.br/consulta-processual/",
                 dont_filter=True,
                 callback=self.parse_process,
-                meta={"data": data},
+                meta={"item": item},
             )
 
     def parse_process(self, response):
@@ -40,12 +42,12 @@ class ProcessesSpider(Spider):
             dont_filter=True,
             formxpath='.//form[@name="formProtocolo"]',
             formdata={
-                "proc": response.meta["data"]["numero_processo"],
+                "proc": response.meta["item"]["process_number"],
                 "consulta": "ok",
                 "B1": "+Consultar+",
             },
             callback=self.parse_details,
-            meta={"data": response.meta["data"]},
+            meta={"item": response.meta["item"]},
         )
 
     def get_history(self, table):
@@ -81,29 +83,21 @@ class ProcessesSpider(Spider):
         return ""
 
     def parse_details(self, response):
-        process_data = response.meta["data"]
-        process_data["processado_em"] = response.css("div.subtitle span::text").get()
-        process_data["data_de_entrada"] = self.get_field(response, "Data de Entrada:")
-        process_data["natureza"] = self.get_field(response, "Natureza:")
-        process_data["complemento"] = self.get_field(response, "Complemento:")
-        process_data["municipio"] = self.get_field(response, "Município:")
-        process_data["interessado_autor"] = self.get_field(
-            response, "Interessado/Autor:"
-        )
-        process_data["recebido"] = self.get_field(response, "Recebido(S/N):")
-        process_data["data_da_ultima_atualizacao"] = self.get_field(response, "Data:")
-        process_data["unidade"] = self.get_field(response, "Unidade:")
-        process_data["movimentacao"] = self.get_history(
-            response.css("table#tabelaResultado")
-        )
-        process_data["numero_documento_de_origem"] = self.get_field(
-            response, "Nº Doc.de Origem:"
-        )
-        process_data["meio"] = self.get_field(response, "Meio:")
-        process_data["data_do_documento"] = self.get_field(
-            response, "Data do Documento:"
-        )
-        process_data["anexos"] = self.get_field(response, "Anexos:")
-        process_data["observacoes"] = self.get_field(response, "Observações:")
-        process_data["local_de_origem"] = self.get_field(response, "Local de Origem:")
-        yield process_data
+        item = response.meta["item"]
+        item.process_at = response.css("div.subtitle span::text").get()
+        item.entry_at = self.get_field(response, "Data de Entrada:")
+        item.nature = self.get_field(response, "Natureza:")
+        item.complement = self.get_field(response, "Complemento:")
+        item.city = self.get_field(response, "Município:")
+        item.author = self.get_field(response, "Interessado/Autor:")
+        item.received = self.get_field(response, "Recebido(S/N):")
+        item.last_update_at = self.get_field(response, "Data:")
+        item.unit = self.get_field(response, "Unidade:")
+        item.history = self.get_history(response.css("table#tabelaResultado"))
+        item.number_of_origin_document = self.get_field(response, "Nº Doc.de Origem:")
+        item.entrance = self.get_field(response, "Meio:")
+        item.document_date = self.get_field(response, "Data do Documento:")
+        item.attachments = self.get_field(response, "Anexos:")
+        item.notes = self.get_field(response, "Observações:")
+        item.place_of_origin = self.get_field(response, "Local de Origem:")
+        yield item
