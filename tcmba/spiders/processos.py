@@ -66,10 +66,10 @@ class ProcessesSpider(Spider):
 
             history.append(
                 {
-                    "unidade": unit_str.strip() if unit_str else "",
-                    "data_de_entrada": entry_date_str.strip() if entry_date_str else "",
-                    "situacao": status_str.strip() if status_str else "",
-                    "observacao": note_str.strip() if note_str else "",
+                    "unity": unit_str.strip() if unit_str else "",
+                    "entry_date": entry_date_str.strip() if entry_date_str else "",
+                    "situation": status_str.strip() if status_str else "",
+                    "notes": note_str.strip() if note_str else "",
                 }
             )
         return history
@@ -84,20 +84,22 @@ class ProcessesSpider(Spider):
 
     def parse_details(self, response):
         item = response.meta["item"]
-        item.process_at = response.css("div.subtitle span::text").get()
-        item.entry_at = self.get_field(response, "Data de Entrada:")
-        item.nature = self.get_field(response, "Natureza:")
-        item.complement = self.get_field(response, "Complemento:")
-        item.city = self.get_field(response, "Município:")
-        item.author = self.get_field(response, "Interessado/Autor:")
-        item.received = self.get_field(response, "Recebido(S/N):")
-        item.last_update_at = self.get_field(response, "Data:")
-        item.unit = self.get_field(response, "Unidade:")
-        item.history = self.get_history(response.css("table#tabelaResultado"))
-        item.number_of_origin_document = self.get_field(response, "Nº Doc.de Origem:")
-        item.entrance = self.get_field(response, "Meio:")
-        item.document_date = self.get_field(response, "Data do Documento:")
-        item.attachments = self.get_field(response, "Anexos:")
-        item.notes = self.get_field(response, "Observações:")
-        item.place_of_origin = self.get_field(response, "Local de Origem:")
+        item["process_at"] = response.css("div.subtitle span::text").get()
+        item["entry_at"] = self.get_field(response, "Data de Entrada:")
+        item["nature"] = self.get_field(response, "Natureza:")
+        item["complement"] = self.get_field(response, "Complemento:")
+        item["city"] = self.get_field(response, "Município:")
+        item["author"] = self.get_field(response, "Interessado/Autor:")
+        item["received"] = self.get_field(response, "Recebido(S/N):")
+        item["last_update_at"] = self.get_field(response, "Data:")
+        item["unit"] = self.get_field(response, "Unidade:")
+        item["history"] = self.get_history(response.css("table#tabelaResultado"))
+        item["number_of_origin_document"] = self.get_field(
+            response, "Nº Doc.de Origem:"
+        )
+        item["entrance"] = self.get_field(response, "Meio:")
+        item["document_date"] = self.get_field(response, "Data do Documento:")
+        item["attachments"] = self.get_field(response, "Anexos:")
+        item["notes"] = self.get_field(response, "Observações:")
+        item["place_of_origin"] = self.get_field(response, "Local de Origem:")
         yield item
