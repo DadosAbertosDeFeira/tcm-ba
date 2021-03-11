@@ -19,13 +19,13 @@ class ConsultaPublicaSpider(Spider):
     start_urls = ["https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam"]
 
     custom_settings = {
-        'FEEDS': {
-            'consulta_publica.json': {
-                'format': 'json',
-                'encoding': 'utf8',
-                'store_empty': False,
-                'fields': None,
-                'indent': 4,
+        "FEEDS": {
+            "consulta_publica.json": {
+                "format": "json",
+                "encoding": "utf8",
+                "store_empty": False,
+                "fields": None,
+                "indent": 4,
             }
         }
     }
@@ -136,10 +136,14 @@ class ConsultaPublicaSpider(Spider):
                 "javax.faces.partial.ajax": "true",
             }
 
-            unit_payloads.append(dict(url="https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",  # noqa
-                                      formdata=payload,
-                                      callback=self.get_detailed_results,
-                                      meta={'unit_payloads': unit_payloads}))
+            unit_payloads.append(
+                dict(
+                    url="https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",  # noqa
+                    formdata=payload,
+                    callback=self.get_detailed_results,
+                    meta={"unit_payloads": unit_payloads},
+                )
+            )
 
         unit_payload = unit_payloads.pop(0)
 
@@ -224,9 +228,9 @@ class ConsultaPublicaSpider(Spider):
                         "pages": pages,
                         "view_state": view_state,
                         "unit": unit,
-                        "unit_payloads": unit_payloads
+                        "unit_payloads": unit_payloads,
                     },
-                    dont_filter=True
+                    dont_filter=True,
                 )
             )
 
@@ -290,9 +294,14 @@ class ConsultaPublicaSpider(Spider):
                         yield FormRequest(
                             url="https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",  # noqa
                             formdata=payload,
-                            meta={"payloads": payloads, "pages": pages, "unit": unit, "unit_payloads": unit_payloads},
+                            meta={
+                                "payloads": payloads,
+                                "pages": pages,
+                                "unit": unit,
+                                "unit_payloads": unit_payloads,
+                            },
                             callback=self.get_detailed_results,
-                            dont_filter=True
+                            dont_filter=True,
                         )
                     else:
                         if unit_payloads:
