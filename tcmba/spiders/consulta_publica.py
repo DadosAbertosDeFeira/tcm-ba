@@ -1,13 +1,14 @@
 import logging
 import re
 from datetime import date, timedelta
+from pathlib import Path
+from re import search
+from uuid import uuid4
 
 from parsel import Selector
 from scrapy import FormRequest, Request, Spider
 
 from tcmba.items import DocumentItem
-from re import search
-from uuid import uuid4
 
 from .helpers import format_city, format_month_and_year, format_period, format_year
 
@@ -251,15 +252,16 @@ class ConsultaPublicaSpider(Spider):
         payloads = response.meta["payloads"]
         payload = payloads.pop(0) if payloads else None
         pages = response.meta["pages"]
-        # TODO: REMOVE ME
-        #  This will "LIMIT" the pagination to second page only if exists.
-        pages = pages[:1]
 
         unit_payloads = response.meta["unit_payloads"]
 
-        with open(
-            f"{self.settings['FILES_STORE']}/{item['filename']}", "wb"
-        ) as fp:  # noqa
+        city = self.cidade.strip().lower().replace(" ", "-")
+        month, year = self.competencia.split("/")
+        files_dir = f"{city}/{year}/{month}/{item['unit']}/{item['category']}/"
+        files_dir = f"{self.settings['FILES_STORE']}/{files_dir}"
+        Path(files_dir).mkdir(parents=True, exist_ok=True)
+
+        with open(f"{files_dir}{item['filename']}", "wb") as fp:  # noqa
             fp.write(response.body)
 
         for value in (item, payload):
