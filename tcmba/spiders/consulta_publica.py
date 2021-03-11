@@ -288,7 +288,7 @@ class ConsultaPublicaSpider(Spider):
 
             item = DocumentItem(
                 category=texts[0],
-                filename=f"{uuid4()}-{self.normalize_text(texts[1].strip())}",
+                filename=f"{uuid4()}-{texts[1].strip()}",
                 inserted_by=texts[2],
                 inserted_at=texts[3],
                 unit=unit,
@@ -350,8 +350,9 @@ class ConsultaPublicaSpider(Spider):
         unit_payloads = response.meta["unit_payloads"]
 
         files_dir = self.get_files_dir(item)
+        file_name = self.normalize_text(item['filename'])
 
-        with open(f"{files_dir}{item['filename']}", "wb") as fp:  # noqa
+        with open(f"{files_dir}{file_name}", "wb") as fp:  # noqa
             fp.write(response.body)
 
         for value in (item, payload):
