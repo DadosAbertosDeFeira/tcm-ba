@@ -18,7 +18,7 @@ Em breve os dados disponíveis para download aqui. :soon:
 O Tribunal lista todos os processos na página de [jurisdicação](https://www.tcm.ba.gov.br/consulta/jurisprudencia/consulta-ementario-juridico/).
 Veja mais detalhes sobre os processos listados lá e os detalhes da [consulta processual](https://www.tcm.ba.gov.br/consulta-processual/).
 
-## Documentos da consulta pública
+### Documentos da consulta pública
 
 O Tribunal de Contas dos Municípios da Bahia tem uma
 [consulta pública](https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam)
@@ -90,5 +90,3 @@ Outras informações:
 Demandas técnicas:
 
 - Cuidado com o número de acessos para não sobrecarregar o portal
-- Importante guardar as "migalhas" de dados, como filtros selecionados.
-Assim poderemos enriquecer esses dados mais tarde e facilitar a busca/filtragem.
