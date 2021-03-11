@@ -350,7 +350,7 @@ class ConsultaPublicaSpider(Spider):
         unit_payloads = response.meta["unit_payloads"]
 
         files_dir = self.get_files_dir(item)
-        file_name = self.normalize_text(item['filename'])
+        file_name = self.normalize_text(item["filename"])
 
         with open(f"{files_dir}{file_name}", "wb") as fp:  # noqa
             fp.write(response.body)
