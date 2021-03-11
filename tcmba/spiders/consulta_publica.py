@@ -290,8 +290,9 @@ class ConsultaPublicaSpider(Spider):
                         yield FormRequest(
                             url="https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",  # noqa
                             formdata=payload,
-                            meta={"payloads": payloads, "pages": pages, "unit": unit},
+                            meta={"payloads": payloads, "pages": pages, "unit": unit, "unit_payloads": unit_payloads},
                             callback=self.get_detailed_results,
+                            dont_filter=True
                         )
                     else:
                         if unit_payloads:
