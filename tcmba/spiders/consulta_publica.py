@@ -2,11 +2,24 @@ from scrapy import Spider, Request, FormRequest
 from parsel import Selector
 from tcmba.items import DocumentItem
 from re import search
+from uuid import uuid4
 
 
 class ConsultaPublicaSpider(Spider):
     name = "consulta_publica"
     start_urls = ["https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam"]
+
+    custom_settings = {
+        'FEEDS': {
+            'consulta_publica.json': {
+                'format': 'json',
+                'encoding': 'utf8',
+                'store_empty': False,
+                'fields': None,
+                'indent': 4,
+            }
+        }
+    }
 
     def parse(self, response):
         form_id = "consultaPublicaTabPanel:consultaPublicaPCSearchForm"
@@ -43,13 +56,9 @@ class ConsultaPublicaSpider(Spider):
             "//*[@id='javax.faces.ViewState']/text()"
         ).get()  # noqa
 
-        """
-        Index 9 não tem paginação OK.
-        Index 8 contém 6 páginas
-        """
+        unit_payloads = []
 
-        # TODO: Parsear todos os resultados
-        for table_row in [result_rows[0]]:
+        for table_row in result_rows:
             columns = table_row.xpath("./td")
 
             form_id = self.get_form_id(columns[0])
@@ -68,17 +77,21 @@ class ConsultaPublicaSpider(Spider):
                 "javax.faces.partial.ajax": "true",
             }
 
-            yield FormRequest(
-                url="https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",  # noqa
-                formdata=payload,
-                callback=self.get_detailed_results,
-            )
+            unit_payloads.append(dict(url="https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam",  # noqa
+                                      formdata=payload,
+                                      callback=self.get_detailed_results,
+                                      meta={'unit_payloads': unit_payloads}))
+
+        unit_payload = unit_payloads.pop(0)
+
+        yield FormRequest(**unit_payload)
 
     def get_detailed_results(self, response):
 
         pages = response.meta.get("pages", None)
         payloads = response.meta.get("payloads", [])
         unit = response.meta.get("unit", None)
+        unit_payloads = response.meta.get("unit_payloads", [])
 
         selector = self.get_selector(response)
 
@@ -119,7 +132,7 @@ class ConsultaPublicaSpider(Spider):
 
             item = DocumentItem(
                 category=texts[0],
-                filename=texts[1],
+                filename=f"{uuid4()}-{texts[1].strip()}",
                 inserted_by=texts[2],
                 inserted_at=texts[3],
                 unit=unit,
@@ -152,7 +165,9 @@ class ConsultaPublicaSpider(Spider):
                         "pages": pages,
                         "view_state": view_state,
                         "unit": unit,
+                        "unit_payloads": unit_payloads
                     },
+                    dont_filter=True
                 )
             )
 
@@ -173,6 +188,12 @@ class ConsultaPublicaSpider(Spider):
         payloads = response.meta["payloads"]
         payload = payloads.pop(0) if payloads else None
         pages = response.meta["pages"]
+        # TODO: REMOVE ME
+        #  This will "LIMIT" the pagination to second page only if exists.
+        if pages:
+            pages = [pages[0]]
+
+        unit_payloads = response.meta["unit_payloads"]
 
         with open(
             f"{self.settings['FILES_STORE']}/{item['filename']}", "wb"
@@ -214,6 +235,10 @@ class ConsultaPublicaSpider(Spider):
                             meta={"payloads": payloads, "pages": pages, "unit": unit},
                             callback=self.get_detailed_results,
                         )
+                    else:
+                        if unit_payloads:
+                            unit_payload = unit_payloads.pop(0)
+                            yield FormRequest(**unit_payload)
 
     def get_selector(self, response):
         source_code = (
