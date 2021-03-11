@@ -391,7 +391,7 @@ class ConsultaPublicaSpider(Spider):
                                 "pages": pages,
                                 "unit": unit,
                                 "unit_payloads": unit_payloads,
-                                "pagination_payloads": pagination_payloads
+                                "pagination_payloads": pagination_payloads,
                             },
                             callback=self.get_detailed_results,
                             dont_filter=True,
