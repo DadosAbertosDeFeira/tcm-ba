@@ -249,8 +249,7 @@ class ConsultaPublicaSpider(Spider):
         pages = response.meta["pages"]
         # TODO: REMOVE ME
         #  This will "LIMIT" the pagination to second page only if exists.
-        if pages:
-            pages = [pages[0]]
+        pages = pages[:1]
 
         unit_payloads = response.meta["unit_payloads"]
 
