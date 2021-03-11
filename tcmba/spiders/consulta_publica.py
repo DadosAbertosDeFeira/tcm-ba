@@ -102,6 +102,12 @@ class ConsultaPublicaSpider(Spider):
     def get_search_results(self, response):
         selector = self.get_selector(response)
 
+        if (
+            "não foram encontrados resultados para a pesquisa."
+            in selector.get().lower()
+        ):
+            raise Exception("No results found.")
+
         result_rows = selector.xpath(
             "//tbody[@id='consultaPublicaTabPanel:consultaPublicaDataTable:tb']//tr"  # noqa
         )
