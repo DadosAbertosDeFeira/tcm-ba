@@ -274,16 +274,16 @@ class ConsultaPublicaSpider(Spider):
 
                         payload = {
                             "javax.faces.partial.ajax": "true",
-                            "javax.faces.source": "consultaPublicaTabPanel:tabelaDocumentos",
-                            "javax.faces.partial.execute": "consultaPublicaTabPanel:tabelaDocumentos",
-                            "javax.faces.partial.render": "consultaPublicaTabPanel:tabelaDocumentos",
-                            "consultaPublicaTabPanel:tabelaDocumentos": "consultaPublicaTabPanel:tabelaDocumentos",
-                            "consultaPublicaTabPanel:tabelaDocumentos_pagination": "true",
+                            "javax.faces.source": "consultaPublicaTabPanel:tabelaDocumentos",  # noqa
+                            "javax.faces.partial.execute": "consultaPublicaTabPanel:tabelaDocumentos",  # noqa
+                            "javax.faces.partial.render": "consultaPublicaTabPanel:tabelaDocumentos",  # noqa
+                            "consultaPublicaTabPanel:tabelaDocumentos": "consultaPublicaTabPanel:tabelaDocumentos",  # noqa
+                            "consultaPublicaTabPanel:tabelaDocumentos_pagination": "true",  # noqa
                             "consultaPublicaTabPanel:tabelaDocumentos_first": str(
                                 page * 10
                             ),
                             "consultaPublicaTabPanel:tabelaDocumentos_rows": "10",
-                            "consultaPublicaTabPanel:tabelaDocumentos_encodeFeature": "true",
+                            "consultaPublicaTabPanel:tabelaDocumentos_encodeFeature": "true",  # noqa
                             "j_idt15": "j_idt15",
                             "javax.faces.ViewState": view_state,
                         }
