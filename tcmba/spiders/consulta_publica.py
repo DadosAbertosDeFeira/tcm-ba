@@ -13,10 +13,6 @@ from .helpers import format_city, format_month_and_year, format_period, format_y
 
 logger = logging.getLogger(__name__)
 
-from .helpers import format_city, format_month_and_year, format_period, format_year
-
-logger = logging.getLogger(__name__)
-
 
 class ConsultaPublicaSpider(Spider):
     name = "consulta_publica"
