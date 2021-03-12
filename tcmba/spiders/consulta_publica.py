@@ -1,6 +1,6 @@
 import logging
 import re
-from datetime import date, timedelta
+from datetime import date, datetime, timedelta
 from pathlib import Path
 from re import search, sub
 from uuid import uuid4
@@ -298,6 +298,7 @@ class ConsultaPublicaSpider(Spider):
                 inserted_by=texts[2],
                 inserted_at=texts[3],
                 unit=unit,
+                crawled_at=datetime.now(),
             )
 
             form_id = self.get_form_id(columns[0])

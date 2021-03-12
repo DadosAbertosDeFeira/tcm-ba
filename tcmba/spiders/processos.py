@@ -1,3 +1,4 @@
+from datetime import datetime
 from scrapy import FormRequest, Request, Spider
 
 from tcmba.items import ProcessItem
@@ -27,6 +28,7 @@ class ProcessesSpider(Spider):
                 process_number=process_number,
                 description=description,
                 file_url=file_url,
+                crawled_at=datetime.now(),
             )
             yield Request(
                 "https://www.tcm.ba.gov.br/consulta-processual/",

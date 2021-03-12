@@ -1,7 +1,11 @@
 from scrapy import Field, Item
 
 
-class DocumentItem(Item):
+class BaseItem(Item):
+    crawled_at = Field()
+
+
+class DocumentItem(BaseItem):
     category = Field()
     filename = Field()
     inserted_by = Field()
@@ -9,14 +13,12 @@ class DocumentItem(Item):
     unit = Field()
 
 
-class ProcessItem(Item):
+class ProcessItem(BaseItem):
     process_number = Field()
     description = Field()
-    process_number = Field()
     file_url = Field()
     entry_at = Field()
     process_at = Field()
-    entry_at = Field()
     nature = Field()
     complement = Field()
     city = Field()
