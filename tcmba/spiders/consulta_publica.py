@@ -455,7 +455,9 @@ class ConsultaPublicaSpider(Spider):
                 f"{path_separator}{unit}{path_separator}{category}{path_separator}"
             )
 
-        files_dir = f"{self.settings['FILES_STORE']}{path_separator}{files_dir}".rstrip(".")
+        files_dir = f"{self.settings['FILES_STORE']}{path_separator}{files_dir}".rstrip(
+            "."
+        )
 
         Path(files_dir).mkdir(parents=True, exist_ok=True)
 
