@@ -293,7 +293,7 @@ class ConsultaPublicaSpider(Spider):
             ]
 
             item = DocumentItem(
-                category=texts[0],
+                category=texts[0].rstrip("."),
                 filename=f"{uuid4()}-{texts[1].strip()}",
                 inserted_by=texts[2],
                 inserted_at=texts[3],
@@ -455,7 +455,9 @@ class ConsultaPublicaSpider(Spider):
                 f"{path_separator}{unit}{path_separator}{category}{path_separator}"
             )
 
-        files_dir = f"{self.settings['FILES_STORE']}{path_separator}{files_dir}"
+        files_dir = f"{self.settings['FILES_STORE']}{path_separator}{files_dir}".rstrip(
+            "."
+        )
 
         Path(files_dir).mkdir(parents=True, exist_ok=True)
 
