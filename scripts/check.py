@@ -1,4 +1,32 @@
-"""Script para verificar os arquivos dos itens com os arquivos salvos no disco."""
+"""Script para verificar os arquivos dos itens com os arquivos salvos no disco.
+
+Para isso é esperado que a estrutura de arquivos esteja organizada da seguinte forma:
+
+<cidade>
+    <ano>
+        anual
+            consulta<qualquer-nome>.json
+            <unidades>
+        mensal
+            consulta<qualquer-nome>.json
+            <mês-formato-DD>
+                <unidades>
+
+O script vai contar com o JSON na mesma pasta da periodicidade (mensal ou anual).
+Durante a execução o raspador criar as pastas e arquivos.
+Ao final você precisa copiar da pasta atual para a pasta da periodicidade
+correspondente.
+
+Os argumentos são passados durante a execução do raspador:
+
+scrapy crawl consulta_publica \
+    -a periodicidade=mensal \
+    -a competencia=01/2019 \
+    -s FILES_STORE="/home/user/" \
+    -o consulta-publica-feira-2019-01.json
+cp consulta-publica-feira-2019-01.json \
+    /home/user/2019/mensal/01/consulta-publica-feira-2019-01.json
+"""
 import argparse
 import json
 from pathlib import Path
