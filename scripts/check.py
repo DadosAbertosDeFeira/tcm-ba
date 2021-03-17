@@ -60,14 +60,18 @@ if __name__ == "__main__":
         # checar estrutura
         pass
     elif args.action == "metrics":
-        # FIXME parametrizar para formato atual de pastas e json
         path = Path(
-            "/home/ana/workspace/documentos-tcmba/tcmba/files/feira-de-santana/2018/anual"  # noqa
+            "/home/ana/workspace/documentos-tcmba/tcmba/files/feira-de-santana/"  # noqa
         )
-        all_files = list(filter(Path.is_file, path.glob("**/*")))
-        print(len(all_files))
-        items_file = (
-            "/home/ana/workspace/documentos-tcmba/consulta-publica-feira-2018.json"
-        )
-        items = read_items(items_file)
-        print(len(items))
+        base_dir = path.name
+        all_files = filter(Path.is_file, path.glob("**/*"))
+        for file in all_files:
+            if file.name.startswith("consulta") and file.name.endswith(".json"):
+                print("==============================================")
+                items = read_items(file)
+                print(f"{len(items)} {file}")
+                all_files_from_parent = list(
+                    filter(Path.is_file, file.parent.glob("**/*"))
+                )
+                # exclui o JSON atual
+                print(f"{len(all_files_from_parent)-1} {file.parent}")
