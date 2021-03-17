@@ -293,7 +293,7 @@ class ConsultaPublicaSpider(Spider):
             ]
 
             item = DocumentItem(
-                category=texts[0],
+                category=texts[0].rstrip("."),
                 filename=f"{uuid4()}-{texts[1].strip()}",
                 inserted_by=texts[2],
                 inserted_at=texts[3],
