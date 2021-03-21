@@ -293,11 +293,11 @@ class ConsultaPublicaSpider(Spider):
             ]
 
             item = DocumentItem(
-                category=texts[0].rstrip("."),
-                filename=f"{uuid4()}-{texts[1].strip()}",
+                category=self.normalize_text(texts[0]),
+                filename=f"{uuid4()}-{self.normalize_text(texts[1])}",
                 inserted_by=texts[2],
                 inserted_at=texts[3],
-                unit=unit,
+                unit=self.normalize_text(unit),
                 crawled_at=datetime.now(),
             )
 
@@ -440,8 +440,10 @@ class ConsultaPublicaSpider(Spider):
 
         competencia = [c.strip() for c in self.competencia.split("/") if c]
 
-        category = self.normalize_text(item["category"])
-        unit = self.normalize_text(item["unit"])
+        unit = item["unit"]
+        category = item["category"][
+            :260
+        ]  # limite do windows para tamanho de nomes pastas
 
         if len(competencia) == 1:
             year = competencia[0]
@@ -465,4 +467,5 @@ class ConsultaPublicaSpider(Spider):
         return files_dir
 
     def normalize_text(self, text):
+        text = text.strip().replace(".", "")
         return sub(r"[^a-zA-Z0-9\u00C0-\u017F\s\.-]", "", text)
