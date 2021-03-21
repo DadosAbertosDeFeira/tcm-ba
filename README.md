@@ -9,9 +9,14 @@ Raspadores disponíveis:
 * Documentos da consulta pública
 * Processos
 
+**ATENÇÃO**: o acesso por máquina é um direito garantido pela [Lei de Acesso à Informação](http://www.planalto.gov.br/ccivil_03/_ato2011-2014/2011/lei/l12527.htm).
+Mas para evitar sobrecarga nos servidores do órgão, certifique-se de baixar os arquivos já disponibilizados ao invés de raspar ou,
+se possível, disponibilizar os arquivos que você tenha baixado.
+
 ## Dados
 
-Em breve os dados disponíveis para download aqui. :soon:
+Visite nosso [Kaggle](https://www.kaggle.com/dadosabertosdefeira/datasets) para baixar os dados raspados por nós.
+Em breve mais dados disponíveis para _download_ aqui. :soon:
 
 ### Processos
 
