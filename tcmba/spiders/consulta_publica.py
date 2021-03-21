@@ -1,13 +1,13 @@
 import logging
 import re
 from datetime import date, datetime, timedelta
+from os.path import sep as path_separator
 from pathlib import Path
 from re import search, sub
 from uuid import uuid4
 
 from parsel import Selector
 from scrapy import FormRequest, Request, Spider
-from os.path import sep as path_separator
 
 from tcmba.items import DocumentItem
 
@@ -357,7 +357,8 @@ class ConsultaPublicaSpider(Spider):
         unit_payloads = response.meta["unit_payloads"]
 
         files_dir = self.get_files_dir(item)
-        file_name = self.normalize_text(item["filename"])
+        item["filepath"] = files_dir
+        file_name = item["filename"]
 
         with open(f"{files_dir}{file_name}", "wb") as fp:  # noqa
             fp.write(response.body)
