@@ -445,18 +445,22 @@ class ConsultaPublicaSpider(Spider):
             :260
         ]  # limite do windows para tamanho de nomes pastas
 
-        if len(competencia) == 1:
+        frequency = self.periodicidade.lower()
+        if frequency == "anual":
             year = competencia[0]
             files_dir = (
-                f"{city}{path_separator}{year}{path_separator}{unit}"
-                f"{path_separator}{category}{path_separator}"
-            )
-        else:
-            month, year = competencia
-            files_dir = (
-                f"{city}{path_separator}{year}{path_separator}{month}"
+                f"{city}{path_separator}{year}{path_separator}{frequency}"
                 f"{path_separator}{unit}{path_separator}{category}{path_separator}"
             )
+        elif frequency == "mensal":
+            month, year = competencia
+            files_dir = (
+                f"{city}{path_separator}{year}{path_separator}{frequency}"
+                f"{path_separator}{month}"
+                f"{path_separator}{unit}{path_separator}{category}{path_separator}"
+            )
+        else:
+            raise Exception("Periodicidade desconhecida.")
 
         files_dir = f"{self.settings['FILES_STORE']}{path_separator}{files_dir}".rstrip(
             "."
