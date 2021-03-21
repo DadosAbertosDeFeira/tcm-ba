@@ -293,11 +293,11 @@ class ConsultaPublicaSpider(Spider):
             ]
 
             item = DocumentItem(
-                category=self.normalize_text(texts[0]),
+                category=self.normalize_text(texts[0].replace(".", "")),
                 filename=f"{uuid4()}-{self.normalize_text(texts[1])}",
                 inserted_by=texts[2],
                 inserted_at=texts[3],
-                unit=self.normalize_text(unit),
+                unit=self.normalize_text(unit.replace(".", "")),
                 crawled_at=datetime.now(),
             )
 
@@ -467,5 +467,4 @@ class ConsultaPublicaSpider(Spider):
         return files_dir
 
     def normalize_text(self, text):
-        text = text.strip().replace(".", "")
-        return sub(r"[^a-zA-Z0-9\u00C0-\u017F\s\.-]", "", text)
+        return sub(r"[^a-zA-Z0-9\u00C0-\u017F\s\.-]", "", text.strip())
