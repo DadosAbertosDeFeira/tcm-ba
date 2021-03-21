@@ -8,6 +8,7 @@ class BaseItem(Item):
 class DocumentItem(BaseItem):
     category = Field()
     filename = Field()
+    filepath = Field()
     inserted_by = Field()
     inserted_at = Field()
     unit = Field()

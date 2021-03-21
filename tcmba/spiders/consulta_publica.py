@@ -1,13 +1,13 @@
 import logging
 import re
 from datetime import date, datetime, timedelta
+from os.path import sep as path_separator
 from pathlib import Path
 from re import search, sub
 from uuid import uuid4
 
 from parsel import Selector
 from scrapy import FormRequest, Request, Spider
-from os.path import sep as path_separator
 
 from tcmba.items import DocumentItem
 
@@ -293,11 +293,11 @@ class ConsultaPublicaSpider(Spider):
             ]
 
             item = DocumentItem(
-                category=texts[0].rstrip("."),
-                filename=f"{uuid4()}-{texts[1].strip()}",
+                category=self.normalize_text(texts[0].replace(".", "")),
+                filename=f"{uuid4()}-{self.normalize_text(texts[1])}",
                 inserted_by=texts[2],
                 inserted_at=texts[3],
-                unit=unit,
+                unit=self.normalize_text(unit.replace(".", "")),
                 crawled_at=datetime.now(),
             )
 
@@ -357,7 +357,8 @@ class ConsultaPublicaSpider(Spider):
         unit_payloads = response.meta["unit_payloads"]
 
         files_dir = self.get_files_dir(item)
-        file_name = self.normalize_text(item["filename"])
+        item["filepath"] = files_dir
+        file_name = item["filename"]
 
         with open(f"{files_dir}{file_name}", "wb") as fp:  # noqa
             fp.write(response.body)
@@ -439,8 +440,10 @@ class ConsultaPublicaSpider(Spider):
 
         competencia = [c.strip() for c in self.competencia.split("/") if c]
 
-        category = self.normalize_text(item["category"])
-        unit = self.normalize_text(item["unit"])
+        unit = item["unit"]
+        category = item["category"][
+            :260
+        ]  # limite do windows para tamanho de nomes pastas
 
         if len(competencia) == 1:
             year = competencia[0]
@@ -464,4 +467,4 @@ class ConsultaPublicaSpider(Spider):
         return files_dir
 
     def normalize_text(self, text):
-        return sub(r"[^a-zA-Z0-9\u00C0-\u017F\s\.-]", "", text)
+        return sub(r"[^a-zA-Z0-9\u00C0-\u017F\s\.-]", "", text.strip())
