@@ -29,12 +29,11 @@ cp consulta-publica-feira-2019-01.json \
 """
 import argparse
 import json
+import logging
 from pathlib import Path
-from re import sub
 
-
-def normalize_text(text):
-    return sub(r"[^a-zA-Z0-9\u00C0-\u017F\s\.-]", "", text)
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger("tcmba.check")
 
 
 def read_items(items_file):
@@ -47,11 +46,15 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     path = Path(args.dir)
+    if not path.is_dir():
+        raise Exception("Não é um diretório.")
     all_files = path.glob("**/*.json")
+    json_not_found = True
     for file in all_files:
+        json_not_found = False
         if file.name.startswith("consulta") and file.name.endswith(".json"):
             print("==============================================")
-            print(file.parent)  # cidade/ano/modalidade
+            logger.info(file.parent)  # cidade/ano/modalidade
             try:
                 items = read_items(file)
                 exists = 0
@@ -60,17 +63,17 @@ if __name__ == "__main__":
                     filter(Path.is_file, file.parent.glob("**/*"))
                 )
                 for item in items:
-                    unit = normalize_text(item["unit"])
-                    category = normalize_text(item["category"])
-                    filename = normalize_text(item["filename"])
-                    item_path = f"{file.parent}/{unit}/{category}/{filename}"
+                    item_path = f"{item['filepath']}{item['filename']}"
                     if Path(item_path).exists():
                         exists += 1
                     else:
                         not_found += 1
-                print(
+                logger.info(
                     f"Arquivos da pasta: {len(all_files_from_parent)-1} - Itens do JSON: {len(items)}"  # noqa
                 )
-                print(f"Encontrados: {exists} - Não encontrados: {not_found}")
+                logger.info(f"Encontrados: {exists} - Não encontrados: {not_found}")
             except Exception as e:
-                print(f"error: {e}")
+                logger.error(f"error: {e}")
+
+    if json_not_found:
+        logger.warning("Nenhum JSON encontrado.")
