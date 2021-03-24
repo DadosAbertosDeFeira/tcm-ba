@@ -14,7 +14,7 @@ from tcmba.spiders.helpers import (
         ("Feira de Santana", "FEIRA DE SANTANA              "),
         ("campo alegre de lourdes", "CAMPO ALEGRE DE LOURDES       "),
         ("SALVADOR", "SALVADOR                      "),
-        ("     Amélia Rodrigues    ", "AMELIA RODRIGUES              "),
+        ("     Amélia Rodrigues    ", "AMÉLIA RODRIGUES              "),
     ],
 )
 def test_given_city_format_according_to_tcmba_format(city, expected_format):
