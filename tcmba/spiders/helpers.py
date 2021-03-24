@@ -5,7 +5,7 @@ def format_city(city):
     limit = 30
     if city is None or len(city) > limit:
         raise Exception("Nome de cidade inválido.")
-    city = strip_accents(city.strip().upper())
+    city = city.strip().upper()
     return city.ljust(limit)
 
 
