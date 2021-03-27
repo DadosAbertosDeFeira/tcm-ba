@@ -292,13 +292,25 @@ class ConsultaPublicaSpider(Spider):
                 if text.strip()
             ]
 
+            month_year = self.competencia.split("/")
+            if len(month_year) == 1:
+                year = month_year[0]
+                month = None
+            else:
+                month = month_year[0]
+                year = month_year[1]
+
             item = DocumentItem(
                 category=self.normalize_text(texts[0].replace(".", "")),
                 filename=f"{uuid4()}-{self.normalize_text(texts[1])}",
+                original_filename=texts[1],
                 inserted_by=texts[2],
                 inserted_at=texts[3],
                 unit=self.normalize_text(unit.replace(".", "")),
                 crawled_at=datetime.now(),
+                month=month,
+                year=year,
+                period=self.periodicidade,
             )
 
             form_id = self.get_form_id(columns[0])

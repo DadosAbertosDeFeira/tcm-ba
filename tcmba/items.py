@@ -8,10 +8,14 @@ class BaseItem(Item):
 class DocumentItem(BaseItem):
     category = Field()
     filename = Field()
+    original_filename = Field()
     filepath = Field()
     inserted_by = Field()
     inserted_at = Field()
     unit = Field()
+    month = Field()
+    year = Field()
+    period = Field()
 
 
 class ProcessItem(BaseItem):
