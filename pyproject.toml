@@ -5,6 +5,10 @@ description = "Documentos da consulta pública do TCM-BA 📄"
 authors = ["Dados Abertos de Feira <dadosabertosdefeira@gmail.com>"]
 license = "MIT"
 
+packages = [
+    { include = "tcmba" },
+]
+
 [tool.poetry.dependencies]
 python = "^3.8"
 scrapy = "^2.4.1"
