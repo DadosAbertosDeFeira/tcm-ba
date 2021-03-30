@@ -40,12 +40,8 @@ def read_items(items_file):
     return json.loads(items_file.read_text())
 
 
-if __name__ == "__main__":
-    parser = argparse.ArgumentParser()
-    parser.add_argument("dir")
-    args = parser.parse_args()
-
-    path = Path(args.dir)
+def check_files_from(dir):
+    path = Path(dir)
     if not path.is_dir():
         raise Exception("Não é um diretório.")
     all_files = path.glob("**/*.json")
@@ -69,7 +65,7 @@ if __name__ == "__main__":
                     else:
                         not_found += 1
                 logger.info(
-                    f"Arquivos da pasta: {len(all_files_from_parent)-1} - Itens do JSON: {len(items)}"  # noqa
+                    f"Arquivos da pasta: {len(all_files_from_parent) - 1} - Itens do JSON: {len(items)}"  # noqa
                 )
                 logger.info(f"Encontrados: {exists} - Não encontrados: {not_found}")
             except Exception as e:
@@ -77,3 +73,11 @@ if __name__ == "__main__":
 
     if json_not_found:
         logger.warning("Nenhum JSON encontrado.")
+
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser()
+    parser.add_argument("dir")
+    args = parser.parse_args()
+
+    check_files_from(args.dir)
