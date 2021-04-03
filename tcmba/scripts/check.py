@@ -46,10 +46,11 @@ def check_files_from(dir):
         raise Exception("Não é um diretório.")
     all_files = path.glob("**/*.json")
     json_not_found = True
+    stats = {}
     for file in all_files:
         json_not_found = False
         if file.name.startswith("consulta") and file.name.endswith(".json"):
-            print("==============================================")
+            logger.info("==============================================")
             logger.info(file.parent)  # cidade/ano/modalidade
             try:
                 items = read_items(file)
@@ -68,11 +69,17 @@ def check_files_from(dir):
                     f"Arquivos da pasta: {len(all_files_from_parent) - 1} - Itens do JSON: {len(items)}"  # noqa
                 )
                 logger.info(f"Encontrados: {exists} - Não encontrados: {not_found}")
+                stats[file.name] = {
+                    "count_folder_files": len(all_files_from_parent) - 1,
+                    "count_items": len(items),
+                }
             except Exception as e:
                 logger.error(f"error: {e}")
 
     if json_not_found:
         logger.warning("Nenhum JSON encontrado.")
+
+    return stats
 
 
 if __name__ == "__main__":
