@@ -13,15 +13,28 @@ Raspadores disponíveis:
 Mas para evitar sobrecarga nos servidores do órgão, certifique-se de baixar os arquivos já disponibilizados ao invés de raspar ou,
 se possível, disponibilizar os arquivos que você tenha baixado.
 
-## Dados
+Esse repositório está sujeito ao código de conduta e guia de contribuição
+do Dados Abertos de Feira disponíveis [aqui](https://github.com/DadosAbertosDeFeira/guias).
 
-Visite nosso [Kaggle](https://www.kaggle.com/dadosabertosdefeira/datasets) para baixar os dados raspados por nós.
-Em breve mais dados disponíveis para _download_ aqui. :soon:
+## Raspadores e Dados
+
+Visite nosso [Kaggle](https://www.kaggle.com/dadosabertosdefeira/datasets) para baixar os dados raspados por nós
+ou a nossa [página de buscas de dados](https://www.dadosabertosdefeira.com.br/painel/).
+
+Para rodar o ambiente de desenvolvimento utilize o [Poetry](https://python-poetry.org/).
 
 ### Processos
 
 O Tribunal lista todos os processos na página de [jurisdicação](https://www.tcm.ba.gov.br/consulta/jurisprudencia/consulta-ementario-juridico/).
 Veja mais detalhes sobre os processos listados lá e os detalhes da [consulta processual](https://www.tcm.ba.gov.br/consulta-processual/).
+
+#### Desenvolvimento
+
+Para rodar o _spider_:
+
+```
+scrapy crawl processos -o processos-tcmba.json
+```
 
 ### Documentos da consulta pública
 
@@ -29,15 +42,7 @@ O Tribunal de Contas dos Municípios da Bahia tem uma
 [consulta pública](https://e.tcm.ba.gov.br/epp/ConsultaPublica/listView.seam)
 para todos os documentos submetidos pelas prefeituras através do SIGA.
 
-Infelizmente esses dados não estão disponíveis para download em massa
-ou em formato aberto. Nós queremos libertar esses dados. Dessa forma,
-qualquer cidadão poderá ter acesso a prestação de contas feita por qualquer
-município no estado da Bahia.
-
 Os municípios podem submeter esses dados até 40 dias depois do final do mês.
-
-Esse repositório está sujeito ao código de conduta e guia de contribuição
-do Dados Abertos de Feira disponíveis [aqui](https://github.com/DadosAbertosDeFeira/guias).
 
 #### Passo a passo para acesso aos documentos
 
@@ -77,7 +82,7 @@ documentos, paginada a cada 10 resultados:
 Essas categorias não estão disponíveis na tabela de resultados mas são interessantes
 como filtros para o cidadão.
 
-## Desenvolvimento
+#### Desenvolvimento
 
 Para rodar o _spider_:
 
@@ -85,13 +90,3 @@ Para rodar o _spider_:
 scrapy crawl consulta_publica -a periodicidade=mensal -a competencia=08/2018 -a cidade="feira de santana"
 scrapy crawl consulta_publica -a periodicidade=anual -a competencia=2018 -a cidade="são gonçalo"
 ```
-
----
-
-Outras informações:
-
-- Competência (período) mais antigo: 10/2015
-
-Demandas técnicas:
-
-- Cuidado com o número de acessos para não sobrecarregar o portal
