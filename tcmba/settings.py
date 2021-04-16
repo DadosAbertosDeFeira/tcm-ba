@@ -17,3 +17,5 @@ if not path.isdir(files_dir):  # create if not
     makedirs(files_dir)
 
 FILES_STORE = files_dir
+
+AUTOTHROTTLE_ENABLED = True
