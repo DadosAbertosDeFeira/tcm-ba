@@ -36,8 +36,8 @@ class ConstructionsSpider(Spider):
         for row in rows:
             detail_url = (
                 row.css(".btn-acao::attr(onclick)")
-                    .re_first(r"location.=\s*(.*)")
-                    .replace("'", "")
+                .re_first(r"location.=\s*(.*)")
+                .replace("'", "")
             )
 
             company_content = row.css("a.btn-popover::attr(data-content)")
@@ -64,17 +64,17 @@ class ConstructionsSpider(Spider):
     def parse_details(self, response, item):
         values = response.css(".form-group").xpath(".//span//text()").getall()
 
-        item['process_number'] = values[1]
-        item['homologation'] = values[2]
-        item['competence'] = values[3]
-        item['bid_value'] = values[4]
-        item['bidding_procedure'] = values[5]
-        item['form'] = values[6]
-        item['operation'] = values[7]
-        item['source'] = values[8]
+        item["process_number"] = values[1]
+        item["homologation"] = values[2]
+        item["competence"] = values[3]
+        item["bid_value"] = values[4]
+        item["bidding_procedure"] = values[5]
+        item["form"] = values[6]
+        item["operation"] = values[7]
+        item["source"] = values[8]
 
-        item['additives'] = self.get_additives(response)
-        item['payments'] = self.get_payments(response)
+        item["additives"] = self.get_additives(response)
+        item["payments"] = self.get_payments(response)
         yield item
 
     def get_additives(self, response):
@@ -82,27 +82,33 @@ class ConstructionsSpider(Spider):
         table = response.xpath(".//table[thead[tr[./th[contains(text(), 'Aditivo')]]]]")
         rows = table.css("tbody tr")
         for row in rows:
-            additives.append({
-                "number": row.xpath(".//td[1]/text()").get(),
-                "entry_date": row.xpath(".//td[2]/text()").get(),
-                "start_date": row.xpath(".//td[3]/text()").get(),
-                "term_calendar_days": row.xpath(".//td[4]/text()").get(),
-                "value": row.xpath(".//td[5]/text()").get(),
-                "quarter": row.xpath(".//td[6]/text()").get(),
-            })
+            additives.append(
+                {
+                    "number": row.xpath(".//td[1]/text()").get(),
+                    "entry_date": row.xpath(".//td[2]/text()").get(),
+                    "start_date": row.xpath(".//td[3]/text()").get(),
+                    "term_calendar_days": row.xpath(".//td[4]/text()").get(),
+                    "value": row.xpath(".//td[5]/text()").get(),
+                    "quarter": row.xpath(".//td[6]/text()").get(),
+                }
+            )
 
         return additives
 
     def get_payments(self, response):
         payments = []
-        table = response.xpath(".//table[thead[tr[./th[contains(text(), 'Valor Pago')]]]]")
+        table = response.xpath(
+            ".//table[thead[tr[./th[contains(text(), 'Valor Pago')]]]]"
+        )
         rows = table.css("tbody tr")
         for row in rows:
-            payments.append({
-                "date": row.xpath(".//td[1]/text()").get(),
-                "effort_number": row.xpath(".//td[2]/text()").get(),
-                "process_number": row.xpath(".//td[3]/text()").get(),
-                "paid_value": row.xpath(".//td[4]/text()").get(),
-                "quarter": row.xpath(".//td[5]/text()").get(),
-            })
+            payments.append(
+                {
+                    "date": row.xpath(".//td[1]/text()").get(),
+                    "effort_number": row.xpath(".//td[2]/text()").get(),
+                    "process_number": row.xpath(".//td[3]/text()").get(),
+                    "paid_value": row.xpath(".//td[4]/text()").get(),
+                    "quarter": row.xpath(".//td[5]/text()").get(),
+                }
+            )
         return payments

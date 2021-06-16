@@ -54,7 +54,7 @@ class TestConstructionsSpider:
         assert spider.ano_inicial == current_year
 
     def test_when_receive_valid_initial_year_must_be_assigned_as_int(self):
-        initial_year = '2018'
+        initial_year = "2018"
         spider = ConstructionsSpider(
             ano_inicial=initial_year,
         )

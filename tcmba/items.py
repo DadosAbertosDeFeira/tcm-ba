@@ -62,5 +62,3 @@ class ConstructionItem(BaseItem):
 
     additives = Field()
     payments = Field()
-
-
