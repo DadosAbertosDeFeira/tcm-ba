@@ -181,9 +181,9 @@ class ConsultaPublicaSpider(Spider):
 
                 pagination_payloads.append(payload)
 
-        unit_payload = unit_payloads.pop(0)
-
-        yield FormRequest(**unit_payload)
+        if unit_payloads:
+            unit_payload = unit_payloads.pop(0)
+            yield FormRequest(**unit_payload)
 
     def paginate_units(self, response):
         pagination_payloads = response.meta["pagination_payloads"]
