@@ -1,6 +1,7 @@
 from datetime import date, datetime
 
 from scrapy import Request, Spider
+from scrapy.selector import Selector
 
 from tcmba.items import ConstructionItem
 from tcmba.spiders.helpers import format_year
@@ -12,7 +13,7 @@ class ConstructionsSpider(Spider):
     current_year = date.today().year
 
     def __init__(self, *args, **kwargs):
-        super(ConstructionsSpider, self).__init__(*args, **kwargs)
+        super().__init__(*args, **kwargs)
         if hasattr(self, "ano_inicial"):
             try:
                 int(self.ano_inicial)
@@ -40,7 +41,8 @@ class ConstructionsSpider(Spider):
                 .replace("'", "")
             )
 
-            company_content = row.css("a.btn-popover::attr(data-content)")
+            popover_content_text = row.css("a.btn-popover::attr(data-content)").get()
+            company_content = Selector(text=popover_content_text)
 
             item = ConstructionItem(
                 construction_number=row.xpath(".//td[1]/text()").get(),
@@ -51,8 +53,8 @@ class ConstructionsSpider(Spider):
                 paid_value=row.xpath(".//td[6]/text()").get(),
                 retained_value=row.xpath(".//td[7]/text()").get(),
                 executing_company={
-                    "name": company_content.re_first(r"<td>(\D+)</td>"),
-                    "cnpj": company_content.re_first(r"<td>(\d+)</td>"),
+                    "cnpj": company_content.css('td:nth-child(1)::text').get(),
+                    "name": company_content.css('td:nth-child(2)::text').get(),
                 },
                 crawled_at=datetime.now(),
             )
