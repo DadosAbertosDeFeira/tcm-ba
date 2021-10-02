@@ -53,8 +53,8 @@ class ConstructionsSpider(Spider):
                 paid_value=row.xpath(".//td[6]/text()").get(),
                 retained_value=row.xpath(".//td[7]/text()").get(),
                 executing_company={
-                    "cnpj": company_content.css('td:nth-child(1)::text').get(),
-                    "name": company_content.css('td:nth-child(2)::text').get(),
+                    "cnpj": company_content.css("td:nth-child(1)::text").get(),
+                    "name": company_content.css("td:nth-child(2)::text").get(),
                 },
                 crawled_at=datetime.now(),
             )
