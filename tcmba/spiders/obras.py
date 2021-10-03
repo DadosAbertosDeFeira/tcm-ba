@@ -7,6 +7,15 @@ from tcmba.items import ConstructionItem
 from tcmba.spiders.helpers import format_year
 
 
+def get_span_value_for_label(response, label):
+    value = (
+        response.css(".form-group")
+        .xpath(f".//span[preceding-sibling::label[contains(., '{label}')]]/text()")
+        .get()
+    )
+    return value if value else ""
+
+
 class ConstructionsSpider(Spider):
     name = "obras"
     url = "https://www.tcm.ba.gov.br/portal-da-cidadania/obras/?municipio=2910800"
@@ -64,16 +73,18 @@ class ConstructionsSpider(Spider):
             yield request
 
     def parse_details(self, response, item):
-        values = response.css(".form-group").xpath(".//span//text()").getall()
-
-        item["process_number"] = values[1]
-        item["homologation"] = values[2]
-        item["competence"] = values[3]
-        item["bid_value"] = values[4]
-        item["bidding_procedure"] = values[5]
-        item["form"] = values[6]
-        item["operation"] = values[7]
-        item["source"] = values[8]
+        item["process_number"] = get_span_value_for_label(response, "Processo")
+        item["homologation"] = get_span_value_for_label(response, "Homologação")
+        item["competence"] = get_span_value_for_label(response, "Competência")
+        item["bid_value"] = get_span_value_for_label(response, "Valor Licitação")
+        item["bidding_procedure"] = get_span_value_for_label(
+            response, "Proced. Licitatório"
+        )
+        item["form"] = get_span_value_for_label(response, "Forma")
+        item["operation"] = item["form"] = get_span_value_for_label(
+            response, "Operação"
+        )
+        item["source"] = item["form"] = get_span_value_for_label(response, "Fonte")
 
         item["additives"] = self.get_additives(response)
         item["payments"] = self.get_payments(response)
