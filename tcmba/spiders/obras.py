@@ -8,12 +8,10 @@ from tcmba.spiders.helpers import format_year
 
 
 def get_span_value_for_label(response, label):
-    value = (
-        response.css(".form-group")
-        .xpath(f".//span[preceding-sibling::label[contains(., '{label}')]]/text()")
-        .get()
-    )
-    return value if value else ""
+    value = response.xpath(
+        f".//span[preceding-sibling::label[contains(., '{label}')]]/text()"
+    ).get()
+    return value or ""
 
 
 def get_table_rows(response, search_text):
@@ -47,7 +45,8 @@ class ConstructionsSpider(Spider):
                 self.cidade = int(self.cidade)
             except ValueError:
                 raise Exception(
-                    "Você precisa um código de cidade válido. O código IBGE deve ser numérico."
+                    "Você precisa um código de cidade válido."
+                    "O código IBGE deve ser numérico."
                 )
         else:
             # Código IBGE de Feira de Santana
@@ -64,9 +63,11 @@ class ConstructionsSpider(Spider):
 
     def start_requests(self):
         year = self.ano_inicial
-        while year <= self.current_year:
-            url = f"{self.url}?municipio={self.cidade}&ano={year}&entidade={self.entidade}&pesquisar=Pesquisar"
-            year += 1
+        for year in range(year, self.current_year + 1):
+            url = (
+                f"{self.url}?municipio={self.cidade}&ano={year}"
+                f"&entidade={self.entidade}&pesquisar=Pesquisar"
+            )
             yield Request(url, self.parse)
 
     def parse(self, response):
