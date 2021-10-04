@@ -16,9 +16,17 @@ def get_span_value_for_label(response, label):
     return value if value else ""
 
 
+def get_table_rows(response, search_text):
+    table = response.xpath(
+        f".//table[thead[tr[./th[contains(text(), '{search_text}')]]]]"
+    )
+    rows = table.css("tbody tr")
+    return rows
+
+
 class ConstructionsSpider(Spider):
     name = "obras"
-    url = "https://www.tcm.ba.gov.br/portal-da-cidadania/obras/?municipio=2910800"
+    url = "https://www.tcm.ba.gov.br/portal-da-cidadania/obras/"
     current_year = date.today().year
 
     def __init__(self, *args, **kwargs):
@@ -27,16 +35,37 @@ class ConstructionsSpider(Spider):
             try:
                 int(self.ano_inicial)
                 self.ano_inicial = int(format_year(self.ano_inicial))
+                if self.ano_inicial > self.current_year:
+                    raise Exception("O ano informado não pode ser no futuro.")
             except ValueError:
                 raise Exception("Você precisa informar um ano válido.")
         else:
             self.ano_inicial = date.today().year
 
+        if hasattr(self, "cidade"):
+            try:
+                self.cidade = int(self.cidade)
+            except ValueError:
+                raise Exception(
+                    "Você precisa um código de cidade válido. O código IBGE deve ser numérico."
+                )
+        else:
+            # Código IBGE de Feira de Santana
+            self.cidade = 2910800
+
+        if hasattr(self, "entidade"):
+            try:
+                self.entidade = int(self.entidade)
+            except ValueError:
+                raise Exception("Você precisa um código de entidade válido.")
+        else:
+            # 129 é o código de entidade da Prefeitura Mun. de Feira de Santana
+            self.entidade = 129
+
     def start_requests(self):
         year = self.ano_inicial
         while year <= self.current_year:
-            # 129 é o código de entidade da Prefeitura Mun. de Feira de Santana
-            url = f"{self.url}&ano={year}&entidade=129&pesquisar=Pesquisar"
+            url = f"{self.url}?municipio={self.cidade}&ano={year}&entidade={self.entidade}&pesquisar=Pesquisar"
             year += 1
             yield Request(url, self.parse)
 
@@ -68,9 +97,9 @@ class ConstructionsSpider(Spider):
                 crawled_at=datetime.now(),
             )
 
-            request = Request(detail_url, callback=self.parse_details)
-            request.cb_kwargs["item"] = item
-            yield request
+            yield Request(
+                detail_url, callback=self.parse_details, cb_kwargs={"item": item}
+            )
 
     def parse_details(self, response, item):
         item["process_number"] = get_span_value_for_label(response, "Processo")
@@ -92,8 +121,7 @@ class ConstructionsSpider(Spider):
 
     def get_additives(self, response):
         additives = []
-        table = response.xpath(".//table[thead[tr[./th[contains(text(), 'Aditivo')]]]]")
-        rows = table.css("tbody tr")
+        rows = get_table_rows(response, "Aditivo")
         for row in rows:
             additives.append(
                 {
@@ -110,10 +138,7 @@ class ConstructionsSpider(Spider):
 
     def get_payments(self, response):
         payments = []
-        table = response.xpath(
-            ".//table[thead[tr[./th[contains(text(), 'Valor Pago')]]]]"
-        )
-        rows = table.css("tbody tr")
+        rows = get_table_rows(response, "Valor Pago")
         for row in rows:
             payments.append(
                 {
