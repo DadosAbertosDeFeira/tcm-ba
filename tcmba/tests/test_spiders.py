@@ -7,6 +7,7 @@ from ..spiders.helpers import (
     format_period,
     format_year,
 )
+from ..spiders.obras import ConstructionsSpider
 
 
 class TestConsultaPublicaSpider:
@@ -43,3 +44,18 @@ class TestConsultaPublicaSpider:
         assert spider.periodicidade == format_period("anual ")
         assert spider.competencia == format_year("2018  ")
         assert spider.unidade == "Prefeitura Municipal de CAMPO ALEGRE DE LOURDES"
+
+
+class TestConstructionsSpider:
+    def test_when_default_arguments_then_initial_year_must_be_current_year(self):
+        current_year = date.today().year
+
+        spider = ConstructionsSpider()
+        assert spider.ano_inicial == current_year
+
+    def test_when_receive_valid_initial_year_must_be_assigned_as_int(self):
+        initial_year = "2018"
+        spider = ConstructionsSpider(
+            ano_inicial=initial_year,
+        )
+        assert spider.ano_inicial == int(initial_year)
